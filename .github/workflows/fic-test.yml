@@ -24,4 +24,9 @@ jobs:
           --resource https://management.azure.com \
           --query accessToken -o tsv)
         echo "Decoded JWT Payload:"
-        echo $TOKEN | cut -d '.' -f2 | tr '_-' '/+' | base64 -d
+        PAYLOAD=$(echo $TOKEN | cut -d '.' -f2)
+        LEN=$((${#PAYLOAD} % 4))
+        if [ $LEN -eq 2 ]; then PAYLOAD="${PAYLOAD}=="; fi
+        if [ $LEN -eq 3 ]; then PAYLOAD="${PAYLOAD}="; fi
+        echo $PAYLOAD | tr '_-' '/+' | base64 -d
+        
